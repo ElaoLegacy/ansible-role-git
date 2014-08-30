@@ -1,0 +1,30 @@
+---
+
+- name: packages pinning
+  template: >
+    src=pinning.j2
+    dest=/etc/apt/preferences.d/git
+  sudo: yes
+
+- name: repositories
+  apt_repository: >
+    repo="{{ item }}"
+    state=present
+    update_cache=yes
+  with_items:
+    - deb http://debian.proxad.net/debian {{ ansible_lsb.codename }}-backports main
+  sudo: yes
+
+- name: packages
+  apt: >
+    name={{ item }}
+    state=latest
+  with_items:
+    - git
+  sudo: yes
+
+- name: config
+  template: >
+    src=config.j2
+    dest=/etc/gitconfig
+  sudo: yes
